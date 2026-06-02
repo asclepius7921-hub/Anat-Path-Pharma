@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anat Path Pharma">
+<meta name="theme-color" content="#0a0a0f">
+<title>Anat Path Pharma</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --bg3: #1a1a26;
+  --border: #2a2a3d;
+  --text: #e8e8f0;
+  --muted: #6b6b8a;
+  --accent-a: #7c6af7;
+  --accent-p: #f76a8a;
+  --accent-ph: #6af7c4;
+  --gold: #f5c842;
+  --card-front: #14141f;
+  --card-back: #0f1a2e;
+  --radius: 18px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── SCREENS ── */
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .3s, transform .3s; }
+.screen.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
+
+/* ── HOME SCREEN ── */
+#home {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 28px 24px 32px;
+}
+
+.home-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 4px;
+  text-align: center;
+}
+.home-logo span.a { color: var(--accent-a); }
+.home-logo span.p { color: var(--accent-p); }
+.home-logo span.ph { color: var(--accent-ph); }
+
+.home-tagline {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.subject-cards { width: 100%; display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+
+.subject-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, box-shadow .15s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.subject-card:active { transform: scale(0.97); }
+.subject-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+.subject-card[data-subject="anatomy"]::before { background: var(--accent-a); }
+.subject-card[data-subject="pathology"]::before { background: var(--accent-p); }
+.subject-card[data-subject="pharmacology"]::before { background: var(--accent-ph); }
+.subject-card[data-subject="anatomy"]:active { border-color: var(--accent-a); box-shadow: 0 0 20px rgba(124,106,247,0.2); }
+.subject-card[data-subject="pathology"]:active { border-color: var(--accent-p); box-shadow: 0 0 20px rgba(247,106,138,0.2); }
+.subject-card[data-subject="pharmacology"]:active { border-color: var(--accent-ph); box-shadow: 0 0 20px rgba(106,247,196,0.2); }
+
+.subject-icon { font-size: 28px; flex-shrink: 0; }
+.subject-info { flex: 1; }
+.subject-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.subject-meta { font-size: 11px; color: var(--muted); }
+.subject-meta .pyq-count { color: var(--gold); }
+
+.subject-progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.subject-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .5s ease;
+}
+.subject-card[data-subject="anatomy"] .subject-progress-fill { background: var(--accent-a); }
+.subject-card[data-subject="pathology"] .subject-progress-fill { background: var(--accent-p); }
+.subject-card[data-subject="pharmacology"] .subject-progress-fill { background: var(--accent-ph); }
+
+.home-total {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.watermark-home {
+  position: absolute;
+  bottom: 10px;
+  font-size: 10px;
+  color: var(--border);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── STUDY SCREEN ── */
+#study {
+  background: var(--bg);
+}
+
+.study-header {
+  padding: 16px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.back-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.back-btn:active { background: var(--bg3); }
+
+.study-title-block { flex: 1; min-width: 0; }
+.study-subject-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+.study-counter { font-size: 11px; color: var(--muted); }
+
+.filter-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s;
+}
+.filter-btn.active-pyq { background: rgba(245,200,66,0.12); border-color: var(--gold); color: var(--gold); }
+
+/* Progress bar */
+.study-progress {
+  height: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 20px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.study-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .3s ease;
+}
+
+/* Card area */
+.card-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  perspective: 1200px;
+  overflow: hidden;
+}
+
+.card-wrapper {
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  max-height: 460px;
+  position: relative;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.card-front {
+  background: var(--card-front);
+  border: 1px solid var(--border);
+}
+.card-back {
+  background: var(--card-back);
+  border: 1px solid rgba(106,247,196,0.15);
+  transform: rotateY(180deg);
+}
+
+/* PYQ badge */
+.pyq-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245,200,66,0.15);
+  border: 1px solid rgba(245,200,66,0.4);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+.card-topic {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.card-q {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.45;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.card-hint {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 12px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* Back face */
+.card-a-label {
+  font-size: 10px;
+  color: var(--accent-ph);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.card-a {
+  font-size: 14px;
+  line-height: 1.7;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.card-a::-webkit-scrollbar { width: 3px; }
+.card-a::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Watermark on card */
+.card-watermark {
+  font-size: 9px;
+  color: rgba(107,107,138,0.35);
+  letter-spacing: 1px;
+  text-align: right;
+  margin-top: 10px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* Swipe indicator */
+.swipe-hint {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 8px;
+  left: 0; right: 0;
+  font-size: 9px;
+  color: var(--muted);
+  pointer-events: none;
+  letter-spacing: 0.5px;
+}
+.swipe-hint span { display: flex; align-items: center; gap: 3px; }
+.swipe-hint .know { color: var(--accent-ph); }
+.swipe-hint .review { color: var(--accent-p); }
+
+/* Action buttons */
+.action-row {
+  padding: 12px 20px 24px;
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  flex: 1;
+  height: 52px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
+  letter-spacing: 0.5px;
+}
+.action-btn:active { transform: scale(0.96); }
+
+.btn-review {
+  background: rgba(247,106,138,0.15);
+  color: var(--accent-p);
+  border: 1px solid rgba(247,106,138,0.3);
+}
+.btn-know {
+  background: rgba(106,247,196,0.15);
+  color: var(--accent-ph);
+  border: 1px solid rgba(106,247,196,0.3);
+}
+
+/* Flying label on swipe */
+.swipe-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: -1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 10;
+  border-radius: 12px;
+  padding: 8px 16px;
+  border: 3px solid;
+}
+.swipe-label.know-label {
+  right: 20px;
+  color: var(--accent-ph);
+  border-color: var(--accent-ph);
+  transform: translateY(-50%) rotate(12deg);
+}
+.swipe-label.review-label {
+  left: 20px;
+  color: var(--accent-p);
+  border-color: var(--accent-p);
+  transform: translateY(-50%) rotate(-12deg);
+}
+.swipe-label.show { opacity: 1; }
+
+/* ── COMPLETE SCREEN ── */
+#complete {
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  gap: 20px;
+  background: var(--bg);
+}
+.complete-emoji { font-size: 56px; }
+.complete-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  text-align: center;
+}
+.complete-stats {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stat-row { display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-size: 12px; color: var(--muted); }
+.stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+.stat-val.know { color: var(--accent-ph); }
+.stat-val.review { color: var(--accent-p); }
+
+.complete-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  border: none;
+  background: var(--accent-a);
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.complete-btn.secondary {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 400;
+}
+.complete-btn:active { opacity: 0.8; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  z-index: 999;
+  transition: transform .3s ease;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Swipe animation on card exit */
+@keyframes swipeRight {
+  to { transform: translateX(120%) rotate(20deg); opacity: 0; }
+}
+@keyframes swipeLeft {
+  to { transform: translateX(-120%) rotate(-20deg); opacity: 0; }
+}
+.card-exit-right { animation: swipeRight .35s ease forwards; }
+.card-exit-left { animation: swipeLeft .35s ease forwards; }
+
+/* Dot indicators */
+.dot-row {
+  display: flex; gap: 5px; justify-content: center;
+  padding: 6px 0 0;
+  flex-shrink: 0;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .2s, transform .2s;
+}
+.dot.active { background: var(--text); transform: scale(1.3); }
+.dot.know { background: var(--accent-ph); }
+.dot.review { background: var(--accent-p); }
+
+/* Install banner */
+.install-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform .4s ease;
+}
+.install-banner.show { transform: translateY(0); }
+.install-banner p { flex: 1; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.install-banner p strong { color: var(--text); }
+.install-dismiss { font-size: 18px; cursor: pointer; color: var(--muted); padding: 4px; }
+.install-btn {
+  background: var(--accent-a);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div class="screen" id="home">
+  <div class="home-logo">
+    <span class="a">Anat</span> <span class="p">Path</span> <span class="ph">Pharma</span>
+  </div>
+  <div class="home-tagline">NEET-PG · FMGE · Flashcards</div>
+
+  <div class="subject-cards">
+    <div class="subject-card" data-subject="anatomy" onclick="startSubject('anatomy')">
+      <div class="subject-icon">🦴</div>
+      <div class="subject-info">
+        <div class="subject-name">Anatomy</div>
+        <div class="subject-meta">
+          <span class="total-label"></span>
+          &nbsp;·&nbsp;<span class="pyq-count">⭐ <span class="pyq-num"></span> PYQ</span>
+        </div>
+        <div class="subject-progress-bar">
+          <div class="subject-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="subject-card" data-subject="pathology" onclick="startSubject('pathology')">
+      <div class="subject-icon">🔬</div>
+      <div class="subject-info">
+        <div class="subject-name">Pathology</div>
+        <div class="subject-meta">
+          <span class="total-label"></span>
+          &nbsp;·&nbsp;<span class="pyq-count">⭐ <span class="pyq-num"></span> PYQ</span>
+        </div>
+        <div class="subject-progress-bar">
+          <div class="subject-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="subject-card" data-subject="pharmacology" onclick="startSubject('pharmacology')">
+      <div class="subject-icon">💊</div>
+      <div class="subject-info">
+        <div class="subject-name">Pharmacology</div>
+        <div class="subject-meta">
+          <span class="total-label"></span>
+          &nbsp;·&nbsp;<span class="pyq-count">⭐ <span class="pyq-num"></span> PYQ</span>
+        </div>
+        <div class="subject-progress-bar">
+          <div class="subject-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-total" id="homeTotalLabel"></div>
+  <div class="watermark-home">@shivansh_studies</div>
+</div>
+
+<!-- STUDY SCREEN -->
+<div class="screen hidden" id="study">
+  <div class="study-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="study-title-block">
+      <div class="study-subject-name" id="studySubjectName"></div>
+      <div class="study-counter" id="studyCounter"></div>
+    </div>
+    <button class="filter-btn" id="pyqFilterBtn" onclick="togglePYQFilter()">★ PYQ only</button>
+  </div>
+
+  <div class="study-progress">
+    <div class="study-progress-fill" id="studyProgressFill"></div>
+  </div>
+
+  <div class="dot-row" id="dotRow"></div>
+
+  <div class="card-area" id="cardArea">
+    <div class="card-wrapper" id="cardWrapper">
+      <div class="swipe-label know-label" id="knowLabel">KNOW ✓</div>
+      <div class="swipe-label review-label" id="reviewLabel">REVIEW</div>
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="card-face card-front">
+          <div class="pyq-badge" id="pyqBadge" style="display:none">⭐ PYQ</div>
+          <div class="card-topic" id="cardTopic"></div>
+          <div class="card-q" id="cardQ"></div>
+          <div class="card-hint">tap to reveal answer</div>
+          <div class="card-watermark">@shivansh_studies</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-a-label">Answer</div>
+          <div class="card-a" id="cardA"></div>
+          <div class="card-watermark">@shivansh_studies</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="action-btn btn-review" onclick="markCard('review')">← Review again</button>
+    <button class="action-btn btn-know" onclick="markCard('know')">I know this →</button>
+  </div>
+</div>
+
+<!-- COMPLETE SCREEN -->
+<div class="screen hidden" id="complete">
+  <div class="complete-emoji" id="completeEmoji">🎉</div>
+  <div class="complete-title" id="completeTitle">Deck Complete!</div>
+  <div class="complete-stats">
+    <div class="stat-row">
+      <span class="stat-label">Cards reviewed</span>
+      <span class="stat-val" id="statTotal"></span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">I knew these</span>
+      <span class="stat-val know" id="statKnow"></span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Need more review</span>
+      <span class="stat-val review" id="statReview"></span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Score</span>
+      <span class="stat-val" id="statScore"></span>
+    </div>
+  </div>
+  <button class="complete-btn" onclick="startSubject(currentSubject, true)">Restart Deck</button>
+  <button class="complete-btn secondary" onclick="startSubject(currentSubject, false, true)">Review Missed Cards</button>
+  <button class="complete-btn secondary" onclick="goHome()">← Back to Subjects</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Install Banner -->
+<div class="install-banner" id="installBanner">
+  <span class="install-dismiss" onclick="dismissInstall()">✕</span>
+  <p><strong>Add to Home Screen</strong><br>Use as a full-screen app, works offline.</p>
+  <button class="install-btn" onclick="installApp()">Install</button>
+</div>
+
+<script src="deck_data.js">  // ── SERVICE WORKER ──
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+</script>
+<script>
+// ── STATE ──
+let currentSubject = '';
+let currentDeck = [];
+let currentIndex = 0;
+let isFlipped = false;
+let pyqOnly = false;
+let sessionResults = {};   // id -> 'know'|'review'
+let progress = {};         // subject -> {know: Set, review: Set}
+
+const SUBJECTS = {
+  anatomy:      { color: 'var(--accent-a)',  icon: '🦴' },
+  pathology:    { color: 'var(--accent-p)',  icon: '🔬' },
+  pharmacology: { color: 'var(--accent-ph)', icon: '💊' },
+};
+
+// ── STORAGE ──
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem('app_progress');
+    if (raw) progress = JSON.parse(raw, (k, v) => k === 'know' || k === 'review' ? new Set(v) : v);
+  } catch(e) {}
+  for (const s of Object.keys(SUBJECTS)) {
+    if (!progress[s]) progress[s] = { know: new Set(), review: new Set() };
+    if (!(progress[s].know instanceof Set)) progress[s].know = new Set(progress[s].know);
+    if (!(progress[s].review instanceof Set)) progress[s].review = new Set(progress[s].review);
+  }
+}
+
+function saveProgress() {
+  try {
+    const serialisable = {};
+    for (const [s, v] of Object.entries(progress)) {
+      serialisable[s] = { know: [...v.know], review: [...v.review] };
+    }
+    localStorage.setItem('app_progress', JSON.stringify(serialisable));
+  } catch(e) {}
+}
+
+// ── HOME ──
+function renderHome() {
+  const subjects = Object.keys(SUBJECTS);
+  const cards = document.querySelectorAll('.subject-card');
+  let totalCards = 0, totalPyq = 0;
+
+  subjects.forEach((s, i) => {
+    const deck = DECK_DATA[s] || [];
+    const pyqCount = deck.filter(c => c.pyq).length;
+    const known = progress[s]?.know?.size || 0;
+    const pct = deck.length ? Math.round(known / deck.length * 100) : 0;
+
+    totalCards += deck.length;
+    totalPyq += pyqCount;
+
+    const card = cards[i];
+    card.querySelector('.total-label').textContent = `${deck.length} cards`;
+    card.querySelector('.pyq-num').textContent = pyqCount;
+    card.querySelector('.subject-progress-fill').style.width = pct + '%';
+  });
+
+  document.getElementById('homeTotalLabel').textContent =
+    `${totalCards} total cards · ${totalPyq} PYQ tagged`;
+}
+
+// ── NAVIGATION ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function goHome() {
+  renderHome();
+  showScreen('home');
+}
+
+// ── STUDY ──
+function startSubject(subject, restart = false, reviewMissed = false) {
+  currentSubject = subject;
+  pyqOnly = false;
+  sessionResults = {};
+
+  let deck = [...(DECK_DATA[subject] || [])];
+
+  if (reviewMissed) {
+    const missed = progress[subject]?.review || new Set();
+    deck = deck.filter(c => missed.has(c.id));
+    if (!deck.length) { showToast('No cards marked for review!'); return; }
+  }
+
+  if (restart) {
+    progress[subject] = { know: new Set(), review: new Set() };
+    saveProgress();
+  }
+
+  // Shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+
+  currentDeck = deck;
+  currentIndex = 0;
+
+  // Style progress bar to subject colour
+  document.getElementById('studyProgressFill').style.background = SUBJECTS[subject].color;
+
+  // Update filter button colour
+  const fb = document.getElementById('pyqFilterBtn');
+  fb.classList.remove('active-pyq');
+
+  showScreen('study');
+  renderCard();
+}
+
+function togglePYQFilter() {
+  pyqOnly = !pyqOnly;
+  const btn = document.getElementById('pyqFilterBtn');
+  btn.classList.toggle('active-pyq', pyqOnly);
+
+  let deck = [...(DECK_DATA[currentSubject] || [])];
+  if (pyqOnly) deck = deck.filter(c => c.pyq);
+  if (!deck.length) { pyqOnly = false; btn.classList.remove('active-pyq'); showToast('No PYQ cards found'); return; }
+
+  // Shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  currentDeck = deck;
+  currentIndex = 0;
+  sessionResults = {};
+  renderCard();
+}
+
+function renderCard() {
+  if (currentIndex >= currentDeck.length) { showComplete(); return; }
+
+  const card = currentDeck[currentIndex];
+  isFlipped = false;
+
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped', 'card-exit-right', 'card-exit-left');
+
+  document.getElementById('studySubjectName').textContent =
+    card.subject.charAt(0).toUpperCase() + card.subject.slice(1);
+  document.getElementById('studyCounter').textContent =
+    `${currentIndex + 1} / ${currentDeck.length}`;
+
+  const pyqBadge = document.getElementById('pyqBadge');
+  pyqBadge.style.display = card.pyq ? 'inline-flex' : 'none';
+
+  document.getElementById('cardTopic').textContent = card.topic || '';
+  document.getElementById('cardQ').textContent = card.q;
+  document.getElementById('cardA').textContent = card.a;
+
+  // Progress fill
+  const pct = (currentIndex / currentDeck.length) * 100;
+  document.getElementById('studyProgressFill').style.width = pct + '%';
+
+  // Dots (show up to 20)
+  renderDots();
+
+  // Hide swipe labels
+  document.getElementById('knowLabel').classList.remove('show');
+  document.getElementById('reviewLabel').classList.remove('show');
+}
+
+function renderDots() {
+  const row = document.getElementById('dotRow');
+  const total = Math.min(currentDeck.length, 20);
+  const start = Math.max(0, Math.min(currentIndex - 9, currentDeck.length - 20));
+
+  row.innerHTML = '';
+  for (let i = start; i < start + total && i < currentDeck.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    const cid = currentDeck[i].id;
+    if (sessionResults[cid] === 'know') d.classList.add('know');
+    else if (sessionResults[cid] === 'review') d.classList.add('review');
+    if (i === currentIndex) d.classList.add('active');
+    row.appendChild(d);
+  }
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+}
+
+function markCard(result) {
+  const card = currentDeck[currentIndex];
+  sessionResults[card.id] = result;
+
+  // Update persistent progress
+  if (result === 'know') {
+    progress[currentSubject].know.add(card.id);
+    progress[currentSubject].review.delete(card.id);
+  } else {
+    progress[currentSubject].review.add(card.id);
+    progress[currentSubject].know.delete(card.id);
+  }
+  saveProgress();
+
+  // Animate exit
+  const fc = document.getElementById('flashcard');
+  fc.classList.add(result === 'know' ? 'card-exit-right' : 'card-exit-left');
+
+  setTimeout(() => {
+    currentIndex++;
+    renderCard();
+  }, 320);
+}
+
+// ── COMPLETE ──
+function showComplete() {
+  const total = currentDeck.length;
+  const know = Object.values(sessionResults).filter(v => v === 'know').length;
+  const review = total - know;
+  const pct = total ? Math.round(know / total * 100) : 0;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statKnow').textContent = know;
+  document.getElementById('statReview').textContent = review;
+  document.getElementById('statScore').textContent = pct + '%';
+
+  const emoji = pct >= 80 ? '🔥' : pct >= 60 ? '💪' : '📚';
+  document.getElementById('completeEmoji').textContent = emoji;
+  document.getElementById('completeTitle').textContent =
+    pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Good Progress!' : 'Keep Revising!';
+
+  // Disable "review missed" if no missed cards
+  const btn = document.querySelectorAll('.complete-btn')[1];
+  btn.disabled = review === 0;
+  btn.style.opacity = review === 0 ? '0.4' : '1';
+
+  document.getElementById('studyProgressFill').style.width = '100%';
+  showScreen('complete');
+}
+
+// ── SWIPE ──
+let touchStartX = 0, touchStartY = 0, touchDragging = false;
+
+document.getElementById('flashcard').addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchDragging = false;
+}, { passive: true });
+
+document.getElementById('flashcard').addEventListener('touchmove', e => {
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+    touchDragging = true;
+    const pct = Math.min(Math.abs(dx) / 100, 1);
+    if (dx > 20) {
+      document.getElementById('knowLabel').classList.add('show');
+      document.getElementById('reviewLabel').classList.remove('show');
+    } else if (dx < -20) {
+      document.getElementById('reviewLabel').classList.add('show');
+      document.getElementById('knowLabel').classList.remove('show');
+    } else {
+      document.getElementById('knowLabel').classList.remove('show');
+      document.getElementById('reviewLabel').classList.remove('show');
+    }
+    // Visual drag
+    document.getElementById('flashcard').style.transform =
+      isFlipped
+        ? `rotateY(180deg) translateX(${-dx * 0.3}px) rotate(${dx * 0.05}deg)`
+        : `translateX(${dx * 0.3}px) rotate(${dx * 0.05}deg)`;
+  }
+}, { passive: true });
+
+document.getElementById('flashcard').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  document.getElementById('flashcard').style.transform = '';
+
+  if (touchDragging && Math.abs(dx) > 60) {
+    markCard(dx > 0 ? 'know' : 'review');
+  } else if (!touchDragging) {
+    flipCard();
+  }
+  touchDragging = false;
+  document.getElementById('knowLabel').classList.remove('show');
+  document.getElementById('reviewLabel').classList.remove('show');
+});
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('installDismissed')) {
+    setTimeout(() => document.getElementById('installBanner').classList.add('show'), 2000);
+  }
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+  dismissInstall();
+}
+
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('installDismissed', '1');
+}
+
+// ── KEYBOARD (desktop) ──
+document.addEventListener('keydown', e => {
+  if (document.getElementById('study').classList.contains('hidden')) return;
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+  if (e.key === 'ArrowRight') markCard('know');
+  if (e.key === 'ArrowLeft') markCard('review');
+  if (e.key === 'Escape') goHome();
+});
+
+// ── INIT ──
+loadProgress();
+renderHome();
+  // ── SERVICE WORKER ──
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+</script>
+</body>
+</html>
