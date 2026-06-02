@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anat Path Pharma">
+<meta name="theme-color" content="#0a0a0f">
+<title>Anat Path Pharma</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a26;--border:#2a2a3d;
+  --text:#e8e8f0;--muted:#6b6b8a;
+  --acc-a:#7c6af7;--acc-p:#f76a8a;--acc-ph:#6af7c4;
+  --gold:#f5c842;--know:#6af7c4;--review:#f76a8a;
+  --radius:18px;--shadow:0 8px 40px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button,a,[onclick],[ontouchend]{touch-action:manipulation;}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;overflow:hidden;user-select:none}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .25s,transform .25s}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(14px)}
+
+/* ── HOME ── */
+#home{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px 20px 48px;gap:0;align-items:stretch}
+.home-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;text-align:center;margin-bottom:3px}
+.home-logo .a{color:var(--acc-a)}.home-logo .p{color:var(--acc-p)}.home-logo .ph{color:var(--acc-ph)}
+.home-tagline{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px}
+
+/* subject cards */
+.subject-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.subject-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;cursor:pointer;transition:transform .15s;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;touch-action:manipulation}
+.subject-card:active{transform:scale(.97)}
+.subject-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px}
+.subject-card[data-s="anatomy"]::before{background:var(--acc-a)}
+.subject-card[data-s="pathology"]::before{background:var(--acc-p)}
+.subject-card[data-s="pharmacology"]::before{background:var(--acc-ph)}
+.s-icon{font-size:26px;flex-shrink:0}
+.s-info{flex:1;min-width:0}
+.s-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:3px}
+.s-meta{font-size:10px;color:var(--muted);margin-bottom:6px}
+.s-meta .pyq-c{color:var(--gold)}
+.s-prog{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.s-prog-fill{height:100%;border-radius:2px;transition:width .5s}
+.subject-card[data-s="anatomy"] .s-prog-fill{background:var(--acc-a)}
+.subject-card[data-s="pathology"] .s-prog-fill{background:var(--acc-p)}
+.subject-card[data-s="pharmacology"] .s-prog-fill{background:var(--acc-ph)}
+.s-score-row{display:flex;gap:8px;font-size:10px}
+.s-know{color:var(--know)}.s-rev{color:var(--review)}.s-unseen{color:var(--muted)}
+
+/* overall stats panel */
+.stats-panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:20px}
+.stats-panel h3{font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.overall-bar{height:10px;border-radius:6px;background:var(--border);overflow:hidden;display:flex;margin-bottom:8px}
+.bar-know{background:var(--know);transition:width .6s}
+.bar-rev{background:var(--review);transition:width .6s}
+.bar-legend{display:flex;gap:14px;font-size:10px}
+.leg{display:flex;align-items:center;gap:5px}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.leg-know .leg-dot{background:var(--know)}.leg-rev .leg-dot{background:var(--review)}.leg-unseen .leg-dot{background:var(--border)}
+
+.home-total{font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;margin-bottom:6px}
+.wm-home{font-size:10px;color:var(--border);letter-spacing:1px;text-transform:uppercase;text-align:center}
+
+/* ── SESSION SETUP SHEET (card count picker) ── */
+.setup-scrim{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+.setup-scrim.open{display:flex}
+.setup-sheet{width:100%;max-width:520px;background:linear-gradient(180deg,#15171c,#0d0f12);border:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:24px 22px 40px}
+@keyframes rise{from{transform:translateY(30px);opacity:.4}to{transform:translateY(0);opacity:1}}
+.setup-scrim.open .setup-sheet{animation:rise .28s cubic-bezier(.2,.9,.2,1)}
+.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:4px}
+.setup-sub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.count-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.count-btn{padding:12px 6px;border-radius:12px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;text-align:center}
+.count-btn.active{border-color:var(--acc-a);background:rgba(124,106,247,.15);color:var(--acc-a)}
+.count-all{grid-column:1/-1;font-size:13px}
+.setup-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-chip{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:11px;cursor:pointer;transition:.15s;letter-spacing:.5px}
+.filter-chip.on{border-color:var(--gold);background:rgba(245,200,66,.12);color:var(--gold)}
+.setup-start{width:100%;height:50px;border-radius:14px;border:none;background:var(--acc-a);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
+.setup-start:active{opacity:.85}
+.setup-cancel{width:100%;height:40px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;margin-top:8px}
+
+/* ── STUDY ── */
+#study{background:var(--bg)}
+.study-header{padding:14px 18px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.study-title{flex:1;min-width:0}
+.study-sname{font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+.study-ctr{font-size:11px;color:var(--muted)}
+.hdr-btns{display:flex;gap:6px}
+.hdr-btn{height:32px;padding:0 10px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;white-space:nowrap}
+.hdr-btn.pyq-on{background:rgba(245,200,66,.12);border-color:var(--gold);color:var(--gold)}
+
+/* progress bar */
+.study-prog{height:2px;background:var(--border);flex-shrink:0;margin:0 18px;border-radius:2px;overflow:hidden}
+.study-prog-fill{height:100%;border-radius:2px;transition:width .3s}
+
+/* mini stats row under progress */
+.mini-stats{display:flex;justify-content:space-between;padding:6px 18px 2px;font-size:10px;flex-shrink:0}
+.ms-know{color:var(--know)}.ms-rev{color:var(--review)}.ms-left{color:var(--muted)}
+
+/* dot row */
+.dot-row{display:flex;gap:4px;justify-content:center;padding:4px 18px 2px;flex-shrink:0;overflow:hidden}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--border);transition:background .2s,transform .2s;flex-shrink:0}
+.dot.active{background:var(--text);transform:scale(1.4)}
+.dot.know{background:var(--know)}.dot.review{background:var(--review)}
+
+/* card area */
+.card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:8px 18px;overflow:hidden;min-height:0}
+.card-wrap{width:100%;max-width:480px;height:100%;max-height:460px;position:relative}
+.flashcard{width:100%;height:100%;position:relative;cursor:pointer}
+.card-face{position:absolute;inset:0;border-radius:20px;display:flex;flex-direction:column;padding:20px;overflow:hidden;box-shadow:var(--shadow);transition:opacity .22s,transform .22s}
+.card-front{background:#14141f;border:1px solid var(--border)}
+.card-back{background:#0f1a2e;border:1px solid rgba(106,247,196,.15);opacity:0;transform:scale(.96);pointer-events:none}
+.card-face.face-visible{opacity:1;transform:scale(1);pointer-events:auto}
+.card-face.face-hidden{opacity:0;transform:scale(.96);pointer-events:none}
+.pyq-badge{display:none;align-items:center;gap:4px;background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.4);border-radius:6px;padding:3px 8px;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:8px;align-self:flex-start}
+.pyq-badge.show{display:inline-flex}
+.card-topic{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;flex-shrink:0}
+.card-q{font-family:'Syne',sans-serif;font-weight:600;font-size:17px;line-height:1.45;flex:1;display:flex;align-items:flex-start;padding-top:4px}
+.card-img{width:100%;border-radius:10px;margin-top:10px;border:1px solid var(--border);display:block;max-height:130px;object-fit:contain;flex-shrink:0}
+.tap-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:1px;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px}
+.tap-hint-arrow{font-size:14px;animation:bounce 1.4s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.card-a-label{font-size:10px;color:var(--acc-ph);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;flex-shrink:0}
+.card-a{font-size:13px;line-height:1.7;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.card-a::-webkit-scrollbar{width:3px}.card-a::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.card-wm{font-size:9px;color:rgba(107,107,138,.3);letter-spacing:1px;text-align:right;margin-top:8px;flex-shrink:0;text-transform:uppercase}
+/* swipe labels */
+.swipe-label{position:absolute;top:50%;font-family:'Syne',sans-serif;font-weight:800;font-size:28px;pointer-events:none;opacity:0;z-index:10;border-radius:12px;padding:6px 14px;border:3px solid}
+.know-lbl{right:14px;color:var(--know);border-color:var(--know);transform:translateY(-50%) rotate(12deg)}
+.review-lbl{left:14px;color:var(--review);border-color:var(--review);transform:translateY(-50%) rotate(-12deg)}
+.swipe-label.show{opacity:1}
+/* action buttons */
+.action-row{padding:10px 18px 20px;display:flex;gap:10px;flex-shrink:0}
+.action-btn{flex:1;height:50px;border-radius:14px;border:none;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:transform .12s;letter-spacing:.5px;touch-action:manipulation}
+.action-btn:active{transform:scale(.95)}
+.btn-review{background:rgba(247,106,138,.15);color:var(--review);border:1px solid rgba(247,106,138,.3)}
+.btn-flip{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700}
+.btn-know{background:rgba(106,247,196,.15);color:var(--know);border:1px solid rgba(106,247,196,.3)}
+/* exit animations */
+@keyframes swipeRight{to{transform:translateX(120%) rotate(20deg);opacity:0}}
+@keyframes swipeLeft{to{transform:translateX(-120%) rotate(-20deg);opacity:0}}
+.card-exit-r{animation:swipeRight .3s ease forwards}
+.card-exit-l{animation:swipeLeft .3s ease forwards}
+
+/* ── STATS SCREEN ── */
+#stats{background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px}
+.stats-header{padding:16px 18px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.stats-body{padding:0 18px}
+.stats-section{margin-bottom:20px}
+.stats-section h3{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.subject-stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+.ssc-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ssc-icon{font-size:22px}.ssc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;flex:1}
+.ssc-pct{font-family:'Syne',sans-serif;font-weight:800;font-size:20px}
+.ssc-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;display:flex;margin-bottom:8px}
+.ssc-nums{display:flex;gap:12px;font-size:11px}
+.ssc-k{color:var(--know)}.ssc-r{color:var(--review)}.ssc-u{color:var(--muted)}
+.topic-list{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.topic-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.topic-row:last-child{border-bottom:none}
+.topic-name{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topic-mini-bar{width:60px;height:6px;border-radius:3px;background:var(--border);overflow:hidden;flex-shrink:0}
+.topic-mini-fill{height:100%;border-radius:3px;background:var(--know);transition:width .4s}
+.topic-pct{font-size:11px;color:var(--muted);width:30px;text-align:right;flex-shrink:0}
+.streak-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.streak-num{font-family:'Syne',sans-serif;font-weight:800;font-size:36px;color:var(--gold)}
+.streak-info{flex:1}.streak-label{font-size:12px;color:var(--muted)}.streak-sub{font-size:11px;color:var(--border);margin-top:3px}
+.nav-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.nav-tab{flex:1;padding:12px 6px;text-align:center;font-size:11px;letter-spacing:.5px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:.15s}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--acc-a)}
+
+/* ── COMPLETE ── */
+#complete{align-items:center;justify-content:center;padding:28px 20px;gap:16px;overflow-y:auto}
+.cmp-emoji{font-size:52px}
+.cmp-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;text-align:center}
+.cmp-stats{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;width:100%;display:flex;flex-direction:column;gap:11px}
+.stat-row{display:flex;justify-content:space-between;align-items:center}
+.stat-lbl{font-size:12px;color:var(--muted)}.stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:18px}
+.stat-val.know{color:var(--know)}.stat-val.review{color:var(--review)}
+/* session bar */
+.session-bar{height:10px;border-radius:5px;background:var(--border);overflow:hidden;display:flex;margin-top:4px}
+.cmp-btn{width:100%;height:50px;border-radius:14px;border:none;background:var(--acc-a);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:opacity .15s}
+.cmp-btn.sec{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;font-weight:400}
+.cmp-btn:active{opacity:.8}.cmp-btn:disabled{opacity:.35;pointer-events:none}
+
+/* ── SCRIM / SHEET ── */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.scrim.open{display:flex}
+.sheet{width:100%;max-width:520px;background:linear-gradient(180deg,#15171c,#0d0f12);border:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:22px 22px 36px;max-height:92vh;overflow-y:auto}
+.scrim.open .sheet{animation:rise .28s cubic-bezier(.2,.9,.2,1)}
+.sheet h2{font-family:'Syne',sans-serif;font-size:18px;margin:0 0 4px}
+.sheet .sub{color:var(--muted);font-size:12px;margin:0 0 16px;line-height:1.5}
+label.fl{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+input.f,textarea.f,select.f{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:11px 13px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;resize:vertical}
+textarea.f{min-height:70px}
+input.f:focus,textarea.f:focus,select.f:focus{outline:none;border-color:var(--acc-a)}
+.img-pick{display:flex;gap:10px;align-items:center;margin-top:6px}
+.img-prev{width:56px;height:56px;border-radius:10px;border:1px solid var(--border);object-fit:cover;background:var(--bg2);display:none;flex-shrink:0}
+.file-btn{flex:1;border:1.5px dashed var(--border);border-radius:12px;padding:13px;text-align:center;color:var(--muted);font-size:12px;cursor:pointer;letter-spacing:.04em}
+.remove-img{font-size:11px;color:var(--review);cursor:pointer;letter-spacing:.05em;margin-top:6px;display:none}
+.sheet-btns{display:flex;gap:10px;margin-top:20px}
+.sheet-btns button{flex:1;border-radius:12px;padding:13px;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text)}
+.sheet-btns .primary{border:none;background:var(--acc-a);color:#fff;font-family:'Syne',sans-serif;font-weight:700}
+.sheet-btns button:active{opacity:.8}
+.list-row{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:1px solid var(--border)}
+.list-row .qq{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list-row .has-img{font-size:9px;color:var(--acc-ph);border:1px solid rgba(106,247,196,.3);border-radius:4px;padding:2px 5px;flex-shrink:0}
+.list-row button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px}
+.danger{color:var(--review)!important}
+.manage-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:10px}
+.sm-btn{font-size:11px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.05em;white-space:nowrap}
+
+/* toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--text);white-space:nowrap;z-index:999;transition:transform .28s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+/* install */
+.inst-banner{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:40;transform:translateY(100%);transition:transform .4s}
+.inst-banner.show{transform:translateY(0)}
+.inst-banner p{flex:1;font-size:12px;line-height:1.4;color:var(--muted)}
+.inst-banner p strong{color:var(--text)}
+.inst-x{font-size:18px;cursor:pointer;color:var(--muted);padding:4px}
+.inst-btn{background:var(--acc-a);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-family:'DM Mono',monospace;cursor:pointer;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="screen" id="home">
+  <div class="home-logo"><span class="a">Anat</span> <span class="p">Path</span> <span class="ph">Pharma</span></div>
+  <div class="home-tagline">NEET-PG · FMGE · Flashcards</div>
+
+  <!-- overall bar -->
+  <div class="stats-panel">
+    <h3>Overall Progress</h3>
+    <div class="overall-bar">
+      <div class="bar-know" id="overallKnow" style="width:0%"></div>
+      <div class="bar-rev" id="overallRev" style="width:0%"></div>
+    </div>
+    <div class="bar-legend">
+      <div class="leg leg-know"><div class="leg-dot"></div><span id="legKnow">0 known</span></div>
+      <div class="leg leg-rev"><div class="leg-dot"></div><span id="legRev">0 review</span></div>
+      <div class="leg leg-unseen"><div class="leg-dot"></div><span id="legUnseen">0 unseen</span></div>
+    </div>
+  </div>
+
+  <div class="subject-cards">
+    <div class="subject-card" data-s="anatomy" data-action="anatomy">
+      <div class="s-icon">🦴</div>
+      <div class="s-info">
+        <div class="s-name">Anatomy</div>
+        <div class="s-meta"><span class="tot-lbl"></span> &nbsp;·&nbsp; <span class="pyq-c">⭐ <span class="pyq-n"></span> PYQ</span></div>
+        <div class="s-prog"><div class="s-prog-fill" style="width:0%"></div></div>
+        <div class="s-score-row">
+          <span class="s-know">✓ <span class="kn">0</span> known</span>
+          <span class="s-rev">↻ <span class="rv">0</span> review</span>
+          <span class="s-unseen">○ <span class="un">0</span> unseen</span>
+        </div>
+      </div>
+    </div>
+    <div class="subject-card" data-s="pathology" data-action="pathology">
+      <div class="s-icon">🔬</div>
+      <div class="s-info">
+        <div class="s-name">Pathology</div>
+        <div class="s-meta"><span class="tot-lbl"></span> &nbsp;·&nbsp; <span class="pyq-c">⭐ <span class="pyq-n"></span> PYQ</span></div>
+        <div class="s-prog"><div class="s-prog-fill" style="width:0%"></div></div>
+        <div class="s-score-row">
+          <span class="s-know">✓ <span class="kn">0</span> known</span>
+          <span class="s-rev">↻ <span class="rv">0</span> review</span>
+          <span class="s-unseen">○ <span class="un">0</span> unseen</span>
+        </div>
+      </div>
+    </div>
+    <div class="subject-card" data-s="pharmacology" data-action="pharmacology">
+      <div class="s-icon">💊</div>
+      <div class="s-info">
+        <div class="s-name">Pharmacology</div>
+        <div class="s-meta"><span class="tot-lbl"></span> &nbsp;·&nbsp; <span class="pyq-c">⭐ <span class="pyq-n"></span> PYQ</span></div>
+        <div class="s-prog"><div class="s-prog-fill" style="width:0%"></div></div>
+        <div class="s-score-row">
+          <span class="s-know">✓ <span class="kn">0</span> known</span>
+          <span class="s-rev">↻ <span class="rv">0</span> review</span>
+          <span class="s-unseen">○ <span class="un">0</span> unseen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-total" id="homeTot"></div>
+  <div style="height:8px"></div>
+  <div class="wm-home">@shivansh_studies</div>
+</div>
+
+<!-- ══════════ SESSION SETUP ══════════ -->
+<div class="setup-scrim" id="setupScrim">
+  <div class="setup-sheet">
+    <div class="setup-title" id="setupTitle">Start Session</div>
+    <div class="setup-sub" id="setupSub">How many cards do you want to study?</div>
+    <div class="count-grid" id="countGrid">
+      <button class="count-btn" data-n="10">10</button>
+      <button class="count-btn" data-n="25">25</button>
+      <button class="count-btn" data-n="50">50</button>
+      <button class="count-btn" data-n="75">75</button>
+      <button class="count-btn" data-n="100">100</button>
+      <button class="count-btn count-all active" data-n="all">All cards</button>
+    </div>
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Filters</div>
+    <div class="setup-filters">
+      <div class="filter-chip" id="chipPYQ" onclick="toggleChip('PYQ')">⭐ PYQ only</div>
+      <div class="filter-chip" id="chipReview" onclick="toggleChip('Review')">↻ Review pile</div>
+      <div class="filter-chip" id="chipUnseen" onclick="toggleChip('Unseen')">○ Unseen only</div>
+    </div>
+    <button class="setup-start" onclick="startFromSetup()">Start Session →</button>
+    <button class="setup-cancel" onclick="closeSetup()">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════ STUDY ══════════ -->
+<div class="screen hidden" id="study">
+  <div class="study-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="study-title">
+      <div class="study-sname" id="studySname"></div>
+      <div class="study-ctr" id="studyCtr"></div>
+    </div>
+    <div class="hdr-btns">
+      <button class="hdr-btn" onclick="showScreen('stats');renderStats()" title="Progress">📊</button>
+      <button class="hdr-btn" onclick="openManage()" title="Manage">≡</button>
+    </div>
+  </div>
+
+  <div class="study-prog"><div class="study-prog-fill" id="studyProgFill"></div></div>
+  <div class="mini-stats">
+    <span class="ms-know" id="msKnow">✓ 0</span>
+    <span class="ms-left" id="msLeft">0 left</span>
+    <span class="ms-rev" id="msRev">↻ 0</span>
+  </div>
+  <div class="dot-row" id="dotRow"></div>
+
+  <div class="card-area">
+    <div class="card-wrap" id="cardWrap">
+      <div class="swipe-label know-lbl" id="knowLbl">KNOW ✓</div>
+      <div class="swipe-label review-lbl" id="reviewLbl">REVIEW</div>
+      <div class="flashcard" id="flashcard">
+        <!-- FRONT -->
+        <div class="card-face card-front face-visible" id="cardFront">
+          <div class="pyq-badge" id="pyqBadge">⭐ PYQ</div>
+          <div class="card-topic" id="cardTopic"></div>
+          <div class="card-q" id="cardQ"></div>
+          <img class="card-img" id="cardImg" src="" alt="" style="display:none">
+          <div class="tap-hint"><span class="tap-hint-arrow">👆</span> tap anywhere to flip</div>
+          <div class="card-wm">@shivansh_studies</div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face card-back face-hidden" id="cardBack">
+          <div class="card-a-label">Answer</div>
+          <div class="card-a" id="cardA"></div>
+          <div class="card-wm">@shivansh_studies</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="action-btn btn-review" onclick="markCard('review')">← Review</button>
+    <button class="action-btn btn-flip" onclick="flipCard()">Flip ↕</button>
+    <button class="action-btn btn-know" onclick="markCard('know')">Know →</button>
+  </div>
+</div>
+
+<!-- ══════════ STATS ══════════ -->
+<div class="screen hidden" id="stats">
+  <div class="stats-header">
+    <button class="back-btn" onclick="showScreen('study')">←</button>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;flex:1">Progress & Analysis</div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="statsTab(0,this)">Overview</div>
+    <div class="nav-tab" onclick="statsTab(1,this)">By Topic</div>
+    <div class="nav-tab" onclick="statsTab(2,this)">Streak</div>
+  </div>
+  <div class="stats-body" id="statsBody"></div>
+</div>
+
+<!-- ══════════ COMPLETE ══════════ -->
+<div class="screen hidden" id="complete">
+  <div class="cmp-emoji" id="cmpEmoji">🎉</div>
+  <div class="cmp-title" id="cmpTitle">Session Complete!</div>
+  <div class="cmp-stats">
+    <div class="stat-row"><span class="stat-lbl">Cards in session</span><span class="stat-val" id="sTot"></span></div>
+    <div class="stat-row"><span class="stat-lbl">Knew these</span><span class="stat-val know" id="sKnow"></span></div>
+    <div class="stat-row"><span class="stat-lbl">Need review</span><span class="stat-val review" id="sRev"></span></div>
+    <div class="stat-row"><span class="stat-lbl">Score</span><span class="stat-val" id="sScore"></span></div>
+    <div class="session-bar">
+      <div class="bar-know" id="cmpBarKnow" style="width:0%"></div>
+      <div class="bar-rev" id="cmpBarRev" style="width:0%"></div>
+    </div>
+  </div>
+  <button class="cmp-btn" onclick="openSetup(curSubject)">New Session</button>
+  <button class="cmp-btn sec" id="missedBtn" onclick="startDirect(curSubject,false,true)">↻ Review Missed</button>
+  <button class="cmp-btn sec" onclick="showScreen('stats');renderStats()">📊 View Progress</button>
+  <button class="cmp-btn sec" onclick="goHome()">← Home</button>
+</div>
+
+<!-- EDIT SCRIM -->
+<div class="scrim" id="editScrim">
+  <div class="sheet">
+    <h2 id="editTitle">Add a card</h2>
+    <p class="sub" id="editSub">Question on front, answer on back, image optional.</p>
+    <label class="fl">Subject</label>
+    <select class="f" id="fSub"><option value="anatomy">Anatomy</option><option value="pathology">Pathology</option><option value="pharmacology">Pharmacology</option></select>
+    <label class="fl">Topic</label><input class="f" id="fTopic" placeholder="e.g. Brachial Plexus">
+    <label class="fl">PYQ?</label>
+    <select class="f" id="fPyq"><option value="no">No</option><option value="yes">Yes — Previous Year Question</option></select>
+    <label class="fl">Question (front)</label><textarea class="f" id="fQ" placeholder="Write the question…"></textarea>
+    <label class="fl">Answer (back)</label><textarea class="f" id="fA" placeholder="Write the answer…"></textarea>
+    <label class="fl">Image (optional)</label>
+    <div class="img-pick">
+      <img class="img-prev" id="fImgPrev" alt="">
+      <label class="file-btn" id="fImgLabel" for="fImgFile">📷 Tap to attach an image</label>
+      <input type="file" id="fImgFile" accept="image/*" style="display:none">
+    </div>
+    <div class="remove-img" id="removeImg" onclick="clearImg()">✕ Remove image</div>
+    <div class="sheet-btns">
+      <button onclick="closeEdit()">Cancel</button>
+      <button class="primary" onclick="saveCard()">Save Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE SCRIM -->
+<div class="scrim" id="manageScrim">
+  <div class="sheet">
+    <div class="manage-top">
+      <div><h2>Manage Cards</h2><p class="sub" id="manageSub" style="margin:0"></p></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="sm-btn" onclick="exportDeck()">Export</button>
+        <label class="sm-btn" for="importFile">Import</label>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+    </div>
+    <button style="width:100%;margin-bottom:12px;padding:12px;border-radius:12px;border:none;background:var(--acc-a);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer" onclick="closeManage();openEdit(null)">＋ Add new card</button>
+    <div id="manageList"></div>
+    <div class="sheet-btns" style="margin-top:16px">
+      <button onclick="closeManage()">Done</button>
+      <button class="danger" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="inst-banner" id="instBanner">
+  <span class="inst-x" onclick="dismissInstall()">✕</span>
+  <p><strong>Add to Home Screen</strong><br>Works offline as a full-screen app.</p>
+  <button class="inst-btn" onclick="installApp()">Install</button>
+</div>
+
+<script src="deck_data.js"></script>
+<script>
+// ── STORAGE ──
+const store={
+  ok:(()=>{try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true}catch(e){return false}})(),
+  mem:{},
+  get(k){try{return this.ok?localStorage.getItem(k):(this.mem[k]??null)}catch(e){return this.mem[k]??null}},
+  set(k,v){try{this.ok?localStorage.setItem(k,v):(this.mem[k]=v)}catch(e){this.mem[k]=v}}
+};
+
+// ── STATE ──
+let deck={}, progress={}, streak={};
+let curSubject='', curDeck=[], curIdx=0;
+let isFlipped=false, sessionRes={};
+let editingId=null, pendingImg=null;
+let setupSubject='', setupCount='all', setupFilter=null;
+
+const SUBJECTS=['anatomy','pathology','pharmacology'];
+const ICONS={anatomy:'🦴',pathology:'🔬',pharmacology:'💊'};
+const ACCS={anatomy:'var(--acc-a)',pathology:'var(--acc-p)',pharmacology:'var(--acc-ph)'};
+
+// ── INIT ──
+function loadData(){
+  const sd=store.get('app_deck');
+  if(sd){try{deck=JSON.parse(sd)}catch(e){deck=seedDeck()}}else deck=seedDeck();
+  const p=store.get('app_prog');
+  progress=p?JSON.parse(p,(k,v)=>(k==='know'||k==='review')?new Set(v):v):{};
+  SUBJECTS.forEach(s=>{
+    if(!progress[s])progress[s]={know:new Set(),review:new Set()};
+    if(!(progress[s].know instanceof Set))progress[s].know=new Set(progress[s].know);
+    if(!(progress[s].review instanceof Set))progress[s].review=new Set(progress[s].review);
+  });
+  const st=store.get('app_streak');
+  streak=st?JSON.parse(st):{count:0,last:''};
+}
+function seedDeck(){
+  const d={};
+  SUBJECTS.forEach(s=>{d[s]=(DECK_DATA[s]||[]).map(c=>({...c}))});
+  return d;
+}
+function saveDeck(){store.set('app_deck',JSON.stringify(deck))}
+function saveProg(){
+  const ser={};
+  for(const[s,v]of Object.entries(progress))ser[s]={know:[...v.know],review:[...v.review]};
+  store.set('app_prog',JSON.stringify(ser));
+}
+function updateStreak(){
+  const today=new Date().toISOString().slice(0,10);
+  if(streak.last===today)return;
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  streak.count=streak.last===yesterday?streak.count+1:1;
+  streak.last=today;
+  store.set('app_streak',JSON.stringify(streak));
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+
+// ── HOME ──
+function renderHome(){
+  let totCards=0,totPyq=0,totKnow=0,totRev=0;
+  const scards=document.querySelectorAll('.subject-card');
+  SUBJECTS.forEach((s,i)=>{
+    const list=deck[s]||[];
+    const pyqN=list.filter(c=>c.pyq).length;
+    const knownIds=progress[s]?.know||new Set();
+    const revIds=progress[s]?.review||new Set();
+    const known=knownIds.size, rev=revIds.size, unseen=list.length-known-rev;
+    const pct=list.length?Math.round(known/list.length*100):0;
+    totCards+=list.length; totPyq+=pyqN; totKnow+=known; totRev+=rev;
+    const c=scards[i];
+    c.querySelector('.tot-lbl').textContent=list.length+' cards';
+    c.querySelector('.pyq-n').textContent=pyqN;
+    c.querySelector('.s-prog-fill').style.width=pct+'%';
+    c.querySelector('.kn').textContent=known;
+    c.querySelector('.rv').textContent=rev;
+    c.querySelector('.un').textContent=Math.max(0,unseen);
+  });
+  const totUnseen=totCards-totKnow-totRev;
+  const kPct=totCards?totKnow/totCards*100:0;
+  const rPct=totCards?totRev/totCards*100:0;
+  document.getElementById('overallKnow').style.width=kPct+'%';
+  document.getElementById('overallRev').style.width=rPct+'%';
+  document.getElementById('legKnow').textContent=totKnow+' known';
+  document.getElementById('legRev').textContent=totRev+' to review';
+  document.getElementById('legUnseen').textContent=Math.max(0,totUnseen)+' unseen';
+  document.getElementById('homeTot').textContent=totCards+' total cards · '+totPyq+' PYQ tagged';
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function goHome(){renderHome();showScreen('home')}
+
+// ── SETUP ──
+function openSetup(s){
+  setupSubject=s;
+  const list=deck[s]||[];
+  document.getElementById('setupTitle').textContent=ICONS[s]+' '+s.charAt(0).toUpperCase()+s.slice(1);
+  document.getElementById('setupSub').textContent='How many cards? ('+list.length+' available)';
+  // reset selections
+  setupCount='all'; setupFilter=null;
+  document.querySelectorAll('.count-btn').forEach(b=>{b.classList.toggle('active',b.dataset.n==='all')});
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('setupScrim').classList.add('open');
+}
+function closeSetup(){document.getElementById('setupScrim').classList.remove('open')}
+document.querySelectorAll('.count-btn').forEach(b=>{
+  b.onclick=()=>{
+    setupCount=b.dataset.n==='all'?'all':parseInt(b.dataset.n);
+    document.querySelectorAll('.count-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  };
+});
+function toggleChip(name){
+  const el=document.getElementById('chip'+name);
+  const wasOn=el.classList.contains('on');
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'));
+  setupFilter=wasOn?null:name;
+  if(!wasOn)el.classList.add('on');
+}
+function startFromSetup(){
+  closeSetup();
+  startDirect(setupSubject,false,false,setupCount,setupFilter);
+}
+
+// ── STUDY ──
+function startDirect(s,restart=false,missed=false,count='all',filter=null){
+  curSubject=s; sessionRes={};
+  let list=[...(deck[s]||[])];
+
+  if(missed){
+    const m=progress[s]?.review||new Set();
+    list=list.filter(c=>m.has(c.id));
+    if(!list.length){showToast('No cards in review pile!');return;}
+  } else if(filter==='PYQ'){
+    list=list.filter(c=>c.pyq);
+    if(!list.length){showToast('No PYQ cards found');return;}
+  } else if(filter==='Review'){
+    const m=progress[s]?.review||new Set();
+    list=list.filter(c=>m.has(c.id));
+    if(!list.length){showToast('No cards in review pile!');return;}
+  } else if(filter==='Unseen'){
+    const kn=progress[s]?.know||new Set();
+    const rv=progress[s]?.review||new Set();
+    list=list.filter(c=>!kn.has(c.id)&&!rv.has(c.id));
+    if(!list.length){showToast('No unseen cards — you\'ve seen them all!');return;}
+  }
+
+  if(restart){progress[s]={know:new Set(),review:new Set()};saveProg();}
+  shuffle(list);
+  if(count!=='all'&&count<list.length)list=list.slice(0,count);
+  curDeck=list; curIdx=0;
+  document.getElementById('studyProgFill').style.background=ACCS[s];
+  updateStreak();
+  showScreen('study');
+  renderCard();
+}
+
+function renderCard(){
+  if(curIdx>=curDeck.length){showComplete();return;}
+  const c=curDeck[curIdx];
+  isFlipped=false;
+
+  // reset card faces (no CSS 3D — use opacity/scale instead, works on all phones)
+  document.getElementById('cardFront').className='card-face card-front face-visible';
+  document.getElementById('cardBack').className='card-face card-back face-hidden';
+  const wrap=document.getElementById('cardWrap');
+  wrap.classList.remove('card-exit-r','card-exit-l');
+
+  document.getElementById('studySname').textContent=c.subject.charAt(0).toUpperCase()+c.subject.slice(1);
+
+  const knowN=Object.values(sessionRes).filter(v=>v==='know').length;
+  const revN=Object.values(sessionRes).filter(v=>v==='review').length;
+  const left=curDeck.length-curIdx;
+  document.getElementById('studyCtr').textContent=(curIdx+1)+' / '+curDeck.length;
+  document.getElementById('msKnow').textContent='✓ '+knowN;
+  document.getElementById('msRev').textContent='↻ '+revN;
+  document.getElementById('msLeft').textContent=left+' left';
+
+  document.getElementById('pyqBadge').classList.toggle('show',!!c.pyq);
+  document.getElementById('cardTopic').textContent=c.topic||'';
+  document.getElementById('cardQ').textContent=c.q;
+  document.getElementById('cardA').textContent=c.a;
+
+  const img=document.getElementById('cardImg');
+  if(c.img){img.src=c.img;img.style.display='block';}else{img.src='';img.style.display='none';}
+
+  document.getElementById('studyProgFill').style.width=(curIdx/curDeck.length*100)+'%';
+  renderDots();
+  document.getElementById('knowLbl').classList.remove('show');
+  document.getElementById('reviewLbl').classList.remove('show');
+}
+
+function renderDots(){
+  const row=document.getElementById('dotRow');
+  const n=Math.min(curDeck.length,24);
+  const start=Math.max(0,Math.min(curIdx-11,curDeck.length-24));
+  row.innerHTML='';
+  for(let i=start;i<start+n&&i<curDeck.length;i++){
+    const d=document.createElement('div');d.className='dot';
+    const id=curDeck[i].id;
+    if(sessionRes[id]==='know')d.classList.add('know');
+    else if(sessionRes[id]==='review')d.classList.add('review');
+    if(i===curIdx)d.classList.add('active');
+    row.appendChild(d);
+  }
+}
+
+function flipCard(){
+  isFlipped=!isFlipped;
+  document.getElementById('cardFront').className='card-face card-front '+(isFlipped?'face-hidden':'face-visible');
+  document.getElementById('cardBack').className='card-face card-back '+(isFlipped?'face-visible':'face-hidden');
+}
+
+function markCard(result){
+  const c=curDeck[curIdx];
+  sessionRes[c.id]=result;
+  if(result==='know'){progress[curSubject].know.add(c.id);progress[curSubject].review.delete(c.id);}
+  else{progress[curSubject].review.add(c.id);progress[curSubject].know.delete(c.id);}
+  saveProg();
+  const wrap=document.getElementById('cardWrap');
+  wrap.classList.add(result==='know'?'card-exit-r':'card-exit-l');
+  setTimeout(()=>{curIdx++;renderCard();},280);
+}
+
+// ── SWIPE / TAP ──
+let tX=0,tY=0,tDrag=false;
+const fc=document.getElementById('flashcard');
+
+fc.addEventListener('touchstart',e=>{
+  tX=e.touches[0].clientX;
+  tY=e.touches[0].clientY;
+  tDrag=false;
+},{passive:true});
+
+fc.addEventListener('touchmove',e=>{
+  const dx=e.touches[0].clientX-tX;
+  const dy=e.touches[0].clientY-tY;
+  if(!tDrag&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.5){tDrag=true;}
+  if(tDrag){
+    document.getElementById('cardWrap').style.transform=`translateX(${dx*.35}px) rotate(${dx*.04}deg)`;
+    document.getElementById('knowLbl').classList.toggle('show',dx>40);
+    document.getElementById('reviewLbl').classList.toggle('show',dx<-40);
+  }
+},{passive:true});
+
+fc.addEventListener('touchend',e=>{
+  e.preventDefault(); // kills ghost click the browser fires 300ms later
+  const dx=e.changedTouches[0].clientX-tX;
+  const dy=e.changedTouches[0].clientY-tY;
+  document.getElementById('cardWrap').style.transform='';
+  document.getElementById('knowLbl').classList.remove('show');
+  document.getElementById('reviewLbl').classList.remove('show');
+  if(tDrag&&Math.abs(dx)>70){
+    markCard(dx>0?'know':'review');
+  } else if(!tDrag&&Math.abs(dx)<20&&Math.abs(dy)<20){
+    flipCard();
+  }
+  tDrag=false;
+},{passive:false}); // must be non-passive for preventDefault to work
+
+// desktop mouse only — e.preventDefault() above stops this on mobile
+fc.addEventListener('click',()=>flipCard());
+
+// ── KEYBOARD ──
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('study').classList.contains('hidden')&&
+     !document.getElementById('editScrim').classList.contains('open')&&
+     !document.getElementById('manageScrim').classList.contains('open')){
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    if(e.key==='ArrowRight')markCard('know');
+    if(e.key==='ArrowLeft')markCard('review');
+    if(e.key==='Escape')goHome();
+  }
+});
+
+// ── COMPLETE ──
+function showComplete(){
+  const tot=curDeck.length;
+  const know=Object.values(sessionRes).filter(v=>v==='know').length;
+  const rev=tot-know;
+  const pct=tot?Math.round(know/tot*100):0;
+  document.getElementById('sTot').textContent=tot;
+  document.getElementById('sKnow').textContent=know;
+  document.getElementById('sRev').textContent=rev;
+  document.getElementById('sScore').textContent=pct+'%';
+  document.getElementById('cmpEmoji').textContent=pct>=80?'🔥':pct>=60?'💪':'📚';
+  document.getElementById('cmpTitle').textContent=pct>=80?'Outstanding!':pct>=60?'Good Progress!':'Keep Going!';
+  document.getElementById('cmpBarKnow').style.width=pct+'%';
+  document.getElementById('cmpBarRev').style.width=(100-pct)+'%';
+  document.getElementById('missedBtn').disabled=rev===0;
+  document.getElementById('studyProgFill').style.width='100%';
+  showScreen('complete');
+}
+
+// ── STATS ──
+let activeTab=0;
+function statsTab(i,el){
+  activeTab=i;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderStats();
+}
+
+function renderStats(){
+  const body=document.getElementById('statsBody');
+  if(activeTab===0) renderStatsOverview(body);
+  else if(activeTab===1) renderStatsTopic(body);
+  else renderStatsStreak(body);
+}
+
+function renderStatsOverview(body){
+  let html='<div class="stats-section"><h3>Subject Breakdown</h3>';
+  SUBJECTS.forEach(s=>{
+    const list=deck[s]||[];
+    const kn=progress[s]?.know?.size||0;
+    const rv=progress[s]?.review?.size||0;
+    const un=Math.max(0,list.length-kn-rv);
+    const pct=list.length?Math.round(kn/list.length*100):0;
+    const kPct=list.length?kn/list.length*100:0;
+    const rPct=list.length?rv/list.length*100:0;
+    html+=`<div class="subject-stat-card">
+      <div class="ssc-header">
+        <div class="ssc-icon">${ICONS[s]}</div>
+        <div class="ssc-name">${s.charAt(0).toUpperCase()+s.slice(1)}</div>
+        <div class="ssc-pct" style="color:${pct>=70?'var(--know)':pct>=40?'var(--gold)':'var(--review)'}">${pct}%</div>
+      </div>
+      <div class="ssc-bar">
+        <div class="bar-know" style="width:${kPct}%"></div>
+        <div class="bar-rev" style="width:${rPct}%"></div>
+      </div>
+      <div class="ssc-nums">
+        <span class="ssc-k">✓ ${kn} known</span>
+        <span class="ssc-r">↻ ${rv} review</span>
+        <span class="ssc-u">○ ${un} unseen</span>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  body.innerHTML=html;
+}
+
+function renderStatsTopic(body){
+  const s=curSubject||'anatomy';
+  const list=deck[s]||[];
+  const kn=progress[s]?.know||new Set();
+
+  // group by topic
+  const topics={};
+  list.forEach(c=>{
+    const t=c.topic||'General';
+    if(!topics[t])topics[t]={total:0,known:0};
+    topics[t].total++;
+    if(kn.has(c.id))topics[t].known++;
+  });
+
+  // sort by % known ascending (weakest first)
+  const sorted=Object.entries(topics).sort((a,b)=>(a[1].known/a[1].total)-(b[1].known/b[1].total));
+
+  let html=`<div class="stats-section"><h3>${s.charAt(0).toUpperCase()+s.slice(1)} · Weakest Topics First</h3><div class="topic-list">`;
+  sorted.forEach(([name,d])=>{
+    const pct=Math.round(d.known/d.total*100);
+    const col=pct>=70?'var(--know)':pct>=40?'var(--gold)':'var(--review)';
+    html+=`<div class="topic-row">
+      <div class="topic-name">${esc(name)}</div>
+      <div class="topic-mini-bar"><div class="topic-mini-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="topic-pct" style="color:${col}">${pct}%</div>
+    </div>`;
+  });
+  html+='</div></div>';
+  body.innerHTML=html;
+}
+
+function renderStatsStreak(body){
+  const today=new Date().toISOString().slice(0,10);
+  const isToday=streak.last===today;
+  body.innerHTML=`
+  <div class="stats-section">
+    <h3>Study Streak</h3>
+    <div class="streak-card">
+      <div class="streak-num">${streak.count}</div>
+      <div class="streak-info">
+        <div class="streak-label">${streak.count===1?'day streak':'day streak'} 🔥</div>
+        <div class="streak-sub">${isToday?'Studied today ✓':'Open the app daily to keep your streak'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-section">
+    <h3>All-time numbers</h3>
+    <div class="topic-list">
+      ${SUBJECTS.map(s=>{
+        const kn=progress[s]?.know?.size||0;
+        const rv=progress[s]?.review?.size||0;
+        const tot=(deck[s]||[]).length;
+        return `<div class="topic-row">
+          <div class="topic-name">${ICONS[s]} ${s.charAt(0).toUpperCase()+s.slice(1)}</div>
+          <div class="topic-pct" style="color:var(--know);width:auto">${kn}/${tot}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ── EDIT ──
+function openEdit(c){
+  editingId=c?c.id:null; pendingImg=c?c.img:null;
+  document.getElementById('editTitle').textContent=c?'Edit Card':'Add a Card';
+  document.getElementById('editSub').textContent=c?'Update question, answer or image.':'Question on front, answer on back, image optional.';
+  document.getElementById('fSub').value=c?c.subject:curSubject;
+  document.getElementById('fTopic').value=c?c.topic:'';
+  document.getElementById('fPyq').value=(c&&c.pyq)?'yes':'no';
+  document.getElementById('fQ').value=c?c.q:'';
+  document.getElementById('fA').value=c?c.a:'';
+  const prev=document.getElementById('fImgPrev');
+  const rm=document.getElementById('removeImg');
+  if(pendingImg){prev.src=pendingImg;prev.style.display='block';document.getElementById('fImgLabel').textContent='📷 Change image';rm.style.display='block';}
+  else{prev.style.display='none';document.getElementById('fImgLabel').textContent='📷 Tap to attach an image';rm.style.display='none';}
+  document.getElementById('editScrim').classList.add('open');
+}
+document.getElementById('fImgFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    pendingImg=rd.result;
+    const prev=document.getElementById('fImgPrev');
+    prev.src=pendingImg;prev.style.display='block';
+    document.getElementById('fImgLabel').textContent='📷 Change image';
+    document.getElementById('removeImg').style.display='block';
+  };
+  rd.readAsDataURL(f);
+};
+function clearImg(){
+  pendingImg=null;
+  document.getElementById('fImgPrev').style.display='none';
+  document.getElementById('fImgLabel').textContent='📷 Tap to attach an image';
+  document.getElementById('removeImg').style.display='none';
+  document.getElementById('fImgFile').value='';
+}
+function saveCard(){
+  const q=document.getElementById('fQ').value.trim();
+  const a=document.getElementById('fA').value.trim();
+  if(!q||!a){showToast('Question and answer are required');return;}
+  const s=document.getElementById('fSub').value;
+  const topic=document.getElementById('fTopic').value.trim()||s;
+  const pyq=document.getElementById('fPyq').value==='yes';
+  if(!deck[s])deck[s]=[];
+  if(editingId){
+    let found=false;
+    for(const sub in deck){
+      const i=deck[sub].findIndex(x=>x.id===editingId);
+      if(i>=0){
+        if(sub!==s){deck[sub].splice(i,1);deck[s].push({id:editingId,subject:s,topic,q,a,img:pendingImg,pyq});}
+        else Object.assign(deck[sub][i],{subject:s,topic,q,a,img:pendingImg,pyq});
+        found=true;break;
+      }
+    }
+    if(!found)deck[s].push({id:editingId,subject:s,topic,q,a,img:pendingImg,pyq});
+  } else {
+    deck[s].push({id:'c'+Date.now(),subject:s,topic,q,a,img:pendingImg,pyq});
+  }
+  saveDeck();closeEdit();showToast(editingId?'Card updated ✓':'Card added ✓');
+}
+function closeEdit(){document.getElementById('editScrim').classList.remove('open');}
+
+// ── MANAGE ──
+function openManage(){
+  const list=deck[curSubject]||[];
+  document.getElementById('manageSub').textContent=list.length+' cards in '+curSubject;
+  const box=document.getElementById('manageList');
+  box.innerHTML='';
+  if(!list.length){box.innerHTML='<p style="color:var(--muted);font-size:13px">No cards yet.</p>';}
+  list.forEach(c=>{
+    const row=document.createElement('div');row.className='list-row';
+    const cEsc=c.id.replace(/'/g,"\\'");
+    row.innerHTML=`<div class="qq">${esc(c.q)}</div>${c.img?'<span class="has-img">IMG</span>':''}<button onclick="closeManage();openEdit(findCard('${cEsc}'))">✎</button><button class="danger" onclick="deleteCard('${cEsc}')">🗑</button>`;
+    box.appendChild(row);
+  });
+  document.getElementById('manageScrim').classList.add('open');
+}
+function closeManage(){document.getElementById('manageScrim').classList.remove('open');}
+function findCard(id){for(const s in deck){const c=deck[s].find(x=>x.id===id);if(c)return c;}return null;}
+function deleteCard(id){
+  if(!confirm('Delete this card?'))return;
+  for(const s in deck)deck[s]=deck[s].filter(x=>x.id!==id);
+  saveDeck();saveProg();openManage();showToast('Card deleted');
+}
+function resetProgress(){
+  if(!confirm('Reset all progress for '+curSubject+'?'))return;
+  progress[curSubject]={know:new Set(),review:new Set()};
+  saveProg();closeManage();showToast('Progress reset');
+}
+function exportDeck(){
+  const blob=new Blob([JSON.stringify(deck,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='anat-path-pharma-deck.json';a.click();showToast('Deck exported');
+}
+document.getElementById('importFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);let merged=0;
+      SUBJECTS.forEach(k=>{if(Array.isArray(d[k])){deck[k]=d[k].map(c=>({img:null,pyq:false,...c}));merged++;}});
+      if(!merged){showToast('No subject data found');return;}
+      saveDeck();renderHome();openManage();showToast('Deck imported ✓');
+    }catch(err){showToast('Invalid JSON file');}
+  };
+  rd.readAsText(f);
+};
+
+// ── SCRIM BACKDROP ──
+document.querySelectorAll('.scrim,.setup-scrim').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)s.classList.remove('open');}));
+
+// ── TOAST ──
+let tt;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000);}
+function esc(s){return s?s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):''}
+
+// ── PWA ──
+let dp=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;if(!store.get('instDismissed'))setTimeout(()=>document.getElementById('instBanner').classList.add('show'),3000);});
+function installApp(){if(dp){dp.prompt();dp.userChoice.then(()=>{dp=null;});}dismissInstall();}
+function dismissInstall(){document.getElementById('instBanner').classList.remove('show');store.set('instDismissed','1');}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+// ── BOOT ──
+loadData();
+renderHome();
+
+// ── HOME CARD TOUCH/CLICK (handles iOS Safari reliably) ──
+// Use addEventListener instead of onclick so we can control passive/preventDefault
+document.querySelectorAll('.subject-card').forEach(card => {
+  const subject = card.getAttribute('data-action');
+  
+  // touchend for mobile — non-passive so we can preventDefault ghost click
+  card.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    openSetup(subject);
+  }, {passive: false});
+  
+  // click for desktop/fallback
+  card.addEventListener('click', function(e) {
+    openSetup(subject);
+  });
+});
+</script>
+</body>
+</html>
