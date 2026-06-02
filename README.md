@@ -1,6 +1,6 @@
 # Anat Path Pharma 🩺
 
-A free flashcard PWA for NEET-PG and FMGE revision.
+A flashcard PWA for NEET-PG and FMGE revision.
 
 ## 755 cards across 3 subjects
 - 🦴 Anatomy — 285 cards, 155 PYQ tagged
